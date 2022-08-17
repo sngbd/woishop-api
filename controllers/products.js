@@ -14,7 +14,7 @@ productsRouter.get('/categories', async (_req, res) => {
   }
 
   res.json(
-    response_helper(true, "Categories found", { categories_list }) 
+    response_helper(true, "Categories found", categories_list) 
   );
 });
 
