@@ -1,8 +1,9 @@
 CREATE DATABASE products;
+\c products
 
-CREATE TABLE product(
+CREATE TABLE IF NOT EXISTS product(
   id SERIAL PRIMARY KEY,
-  title VARCHAR(25),
+  title VARCHAR(50),
   description VARCHAR(255),
   price INTEGER,
   discountPercentage REAL,
@@ -14,19 +15,9 @@ CREATE TABLE product(
   images TEXT[]
 );
 
-INSERT INTO product (
-  title,
-  description,
-  price,
-  discountPercentage,
-  rating,
-  stock,
-  brand,
-  category,
-  thumbnail,
-  images
-  )
+INSERT INTO product
   VALUES (
+    DEFAULT,
     'iPhone 9',
     'An apple mobile which is nothing like apple',
     549,
@@ -43,22 +34,9 @@ INSERT INTO product (
       "https://dummyjson.com/image/i/products/1/4.jpg",
       "https://dummyjson.com/image/i/products/1/thumbnail.jpg"
     }'
-  );
-
-
-INSERT INTO product (
-  title,
-  description,
-  price,
-  discountPercentage,
-  rating,
-  stock,
-  brand,
-  category,
-  thumbnail,
-  images
-  )
-  VALUES (
+  ),
+  (
+    DEFAULT,
     'Tree Oil 30ml',
     'Tea tree oil contains a number of compounds, including terpinen-4-ol, that have been shown to kill certain bacteria',
     12,
@@ -73,5 +51,57 @@ INSERT INTO product (
       "https://dummyjson.com/image/i/products/17/2.jpg",
       "https://dummyjson.com/image/i/products/17/3.jpg",
       "https://dummyjson.com/image/i/products/17/thumbnail.jpg"
+    }'
+  ),
+  (
+    DEFAULT,
+    'Samsung Universe 9',
+    'Samsung''s new variant which goes beyond Galaxy to the Universe',
+    1249,
+    15.46,
+    4.09,
+    36,
+    'Samsung',
+    'smartphones',
+    'https://dummyjson.com/image/i/products/3/thumbnail.jpg',
+    '{
+      "https://dummyjson.com/image/i/products/3/1.jpg"
+    }'
+  ),
+  (
+    DEFAULT,
+    'MacBook Pro',
+    'MacBook Pro 2021 with mini-LED display may launch between September, November',
+    1749,
+    11.02,
+    4.57,
+    83,
+    'Apple',
+    'laptops',
+    'https://dummyjson.com/image/i/products/6/thumbnail.png',
+    '{
+      "https://dummyjson.com/image/i/products/6/1.png",
+      "https://dummyjson.com/image/i/products/6/2.jpg",
+      "https://dummyjson.com/image/i/products/6/3.png",
+      "https://dummyjson.com/image/i/products/6/4.jpg"
+    }'
+  ),
+  (
+    DEFAULT,
+    'Microsoft Surface Laptop 4',
+    'Style and speed. Stand out on HD video calls backed by Studio Mics. Capture ideas on the vibrant touchscreen.',
+    1499,
+    10.23,
+    4.43,
+    68,
+    'Microsoft Surface',
+    'laptops',
+    'https://dummyjson.com/image/i/products/8/thumbnail.jpg',
+    '{
+      "https://dummyjson.com/image/i/products/8/1.jpg",
+      "https://dummyjson.com/image/i/products/8/2.jpg",
+      "https://dummyjson.com/image/i/products/8/3.jpg",
+      "https://dummyjson.com/image/i/products/8/4.jpg",
+      "https://dummyjson.com/image/i/products/8/thumbnail.jpg"
     }'
   );
