@@ -4,7 +4,7 @@ const { response_helper } = require('../utils/response_helper');
 
 // GET List Category
 productsRouter.get('/categories', async (_req, res) => {
-  const categories = await pool.query("SELECT category FROM product");
+  const categories = await pool.query("SELECT DISTINCT category FROM product");
   const categories_list = categories.rows.map(data => data.category);
 
   if (!categories_list.length) {
