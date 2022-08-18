@@ -6,4 +6,4 @@ const response_helper = (success, message, data) => {
   }
 };
 
-module.exports = { response_helper };
+module.exports = response_helper;

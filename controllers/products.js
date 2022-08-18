@@ -1,6 +1,6 @@
 const productsRouter = require('express').Router();
 const pool = require('../data/db');
-const { response_helper } = require('../utils/response_helper');
+const response_helper = require('../utils/response_helper');
 
 // GET List Category
 productsRouter.get('/categories', async (_req, res) => {
