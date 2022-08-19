@@ -1,6 +1,7 @@
-const supertest = require('supertest')
-const app = require('../app')
-const api = supertest(app)
+const supertest = require('supertest');
+const app = require('../app');
+
+const api = supertest(app);
 
 describe('GET List Category', () => {
   test('There are 3 categories in total', async () => {
@@ -10,9 +11,9 @@ describe('GET List Category', () => {
     const { success, message, data } = body;
 
     expect(success).toBe(true);
-    expect(message).toBe("Categories found");
+    expect(message).toBe('Categories found');
     expect(data).toHaveLength(3);
-  })
+  });
 });
 
 describe('GET Single Product', () => {
@@ -23,7 +24,7 @@ describe('GET Single Product', () => {
     const { success, message, data } = body;
 
     expect(success).toBe(true);
-    expect(message).toBe("Product found");
+    expect(message).toBe('Product found');
     expect(data.id).toBe(3);
   });
 
@@ -34,7 +35,7 @@ describe('GET Single Product', () => {
     const { success, message, data } = body;
 
     expect(success).toBe(false);
-    expect(message).toBe("Product not found");
+    expect(message).toBe('Product not found');
     expect(data).toEqual({});
   });
 });
@@ -47,8 +48,8 @@ describe('GET List Product by Category', () => {
     const { success, message, data } = body;
 
     expect(success).toBe(true);
-    expect(message).toBe("Category found");
-    expect(data.every(d => d.category === "smartphones")).toBe(true);
+    expect(message).toBe('Category found');
+    expect(data.every((d) => d.category === 'smartphones')).toBe(true);
   });
 
   test('Category fashion is not found', async () => {
@@ -58,7 +59,7 @@ describe('GET List Product by Category', () => {
     const { success, message, data } = body;
 
     expect(success).toBe(false);
-    expect(message).toBe("Category not found");
+    expect(message).toBe('Category not found');
     expect(data).toEqual({});
   });
 });
@@ -68,7 +69,7 @@ describe('GET List All Product', () => {
     await api
       .get('/api/products')
       .expect(200)
-      .expect('Content-Type', /application\/json/)
+      .expect('Content-Type', /application\/json/);
   });
 
   test('There are 5 products in total', async () => {
@@ -78,7 +79,7 @@ describe('GET List All Product', () => {
     const { success, message, data } = body;
 
     expect(success).toBe(true);
-    expect(message).toBe("Products found");
+    expect(message).toBe('Products found');
     expect(data).toHaveLength(5);
   });
 });
