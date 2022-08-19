@@ -15,3 +15,6 @@
 [Deployed API](http://43.204.234.59:3000/api/products/)
 
 [API Documentation](https://documenter.getpostman.com/view/22906795/VUqoQdgN)
+
+### Entity Relationship Diagram (ERD)
+![](ERD/products.png)
