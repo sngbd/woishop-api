@@ -10,12 +10,12 @@ productsRouter.get('/categories', async (_req, res) => {
 
   if (!categoriesList.length) {
     return res.status(404).json(
-      response(false, 'Categories not found', {}),
+      response(false, 'All categories not found', {}),
     );
   }
 
   return res.json(
-    response(true, 'Categories found', categoriesList),
+    response(true, 'All categories found', categoriesList),
   );
 });
 
@@ -26,12 +26,12 @@ productsRouter.get('/:id', async (req, res) => {
 
   if (!rows.length) {
     return res.status(404).json(
-      response(false, 'Product not found', {}),
+      response(false, `Product with id '${id}' not found`, {}),
     );
   }
 
   return res.json(
-    response(true, 'Product found', rows[0]),
+    response(true, `Product with id '${id}' found`, rows[0]),
   );
 });
 
@@ -42,12 +42,12 @@ productsRouter.get('/categories/:category', async (req, res) => {
 
   if (!rows.length) {
     return res.status(404).json(
-      response(false, 'Category not found', {}),
+      response(false, `Category '${category}' not found`, {}),
     );
   }
 
   return res.json(
-    response(true, 'Category found', rows),
+    response(true, `Category '${category}' found`, rows),
   );
 });
 
@@ -57,12 +57,12 @@ productsRouter.get('/', async (_req, res) => {
 
   if (!rows.length) {
     return res.status(404).json(
-      response(false, 'Products not found', {}),
+      response(false, 'All products not found', {}),
     );
   }
 
   return res.json(
-    response(true, 'Products found', rows),
+    response(true, 'All products found', rows),
   );
 });
 
