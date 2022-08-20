@@ -1,67 +1,68 @@
 const productsRouter = require('express').Router();
 const pool = require('../data/db');
-const responseHelper = require('../utils/responseHelper');
+const response = require('../helpers/response');
+const { queryAllProduct, selectAllProduct } = require('../helpers/query');
 
 // GET List Category
 productsRouter.get('/categories', async (_req, res) => {
-  const categories = await pool.query('SELECT DISTINCT category FROM product');
-  const categoriesList = categories.rows.map((data) => data.category);
+  const { rows } = await pool.query('SELECT * FROM category');
+  const categoriesList = rows.map((data) => data.name);
 
   if (!categoriesList.length) {
     return res.status(404).json(
-      responseHelper(false, 'Categories not found', {}),
+      response(false, 'Categories not found', {}),
     );
   }
 
   return res.json(
-    responseHelper(true, 'Categories found', categoriesList),
+    response(true, 'Categories found', categoriesList),
   );
 });
 
 // GET Single Product
 productsRouter.get('/:id', async (req, res) => {
   const { id } = req.params;
-  const product = await pool.query('SELECT * FROM product WHERE id=$1', [id]);
+  const { rows } = await pool.query(`${selectAllProduct} WHERE id=$1`, [id]);
 
-  if (!product.rows.length) {
+  if (!rows.length) {
     return res.status(404).json(
-      responseHelper(false, 'Product not found', {}),
+      response(false, 'Product not found', {}),
     );
   }
 
   return res.json(
-    responseHelper(true, 'Product found', product.rows[0]),
+    response(true, 'Product found', rows[0]),
   );
 });
 
 // GET List Product by Category
 productsRouter.get('/categories/:category', async (req, res) => {
   const { category } = req.params;
-  const products = await pool.query('SELECT * FROM product WHERE category=$1', [category]);
+  const { rows } = await pool.query(`${selectAllProduct} WHERE category=$1`, [category]);
 
-  if (!products.rows.length) {
+  if (!rows.length) {
     return res.status(404).json(
-      responseHelper(false, 'Category not found', {}),
+      response(false, 'Category not found', {}),
     );
   }
 
   return res.json(
-    responseHelper(true, 'Category found', products.rows),
+    response(true, 'Category found', rows),
   );
 });
 
 // GET List All Product
 productsRouter.get('/', async (_req, res) => {
-  const allProducts = await pool.query('SELECT * FROM product');
+  const { rows } = await pool.query(queryAllProduct);
 
-  if (!allProducts.rows.length) {
+  if (!rows.length) {
     return res.status(404).json(
-      responseHelper(false, 'Products not found', {}),
+      response(false, 'Products not found', {}),
     );
   }
 
   return res.json(
-    responseHelper(true, 'Products found', allProducts.rows),
+    response(true, 'Products found', rows),
   );
 });
 
