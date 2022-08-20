@@ -1,18 +1,43 @@
 CREATE DATABASE products;
 \c products
 
+CREATE TABLE IF NOT EXISTS brand(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(25)
+);
+
+CREATE TABLE IF NOT EXISTS category(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(25)
+);
+
+INSERT INTO brand (name) 
+  VALUES 
+    ('Apple'), 
+    ('Hemani Tea'), 
+    ('Samsung'), 
+    ('Microsoft Surface');
+
+INSERT INTO category (name) 
+  VALUES 
+    ('smartphones'), 
+    ('laptops'), 
+    ('skincare');
+
 CREATE TABLE IF NOT EXISTS product(
   id SERIAL PRIMARY KEY,
   title VARCHAR(50),
   description VARCHAR(255),
   price INTEGER,
-  discountPercentage REAL,
+  discount_percentage REAL,
   rating REAL,
   stock INTEGER,
-  brand VARCHAR(25),
-  category VARCHAR(25),
+  brand_id INTEGER,
+  category_id INTEGER,
   thumbnail TEXT,
-  images TEXT[]
+  images TEXT[],
+  FOREIGN KEY (brand_id) REFERENCES brand (id) ON DELETE SET NULL,
+  FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE SET NULL
 );
 
 INSERT INTO product
@@ -24,8 +49,8 @@ INSERT INTO product
     12.96,
     4.69,
     94,
-    'Apple',
-    'smartphones',
+    1,
+    1,
     'https://dummyjson.com/image/i/products/1/thumbnail.jpg',
     '{
       "https://dummyjson.com/image/i/products/1/1.jpg",
@@ -43,8 +68,8 @@ INSERT INTO product
     4.09,
     4.52,
     78,
-    'Hemani Tea',
-    'skincare',
+    2,
+    3,
     'https://dummyjson.com/image/i/products/17/thumbnail.jpg',
     '{
       "https://dummyjson.com/image/i/products/17/1.jpg",
@@ -61,8 +86,8 @@ INSERT INTO product
     15.46,
     4.09,
     36,
-    'Samsung',
-    'smartphones',
+    3,
+    1,
     'https://dummyjson.com/image/i/products/3/thumbnail.jpg',
     '{
       "https://dummyjson.com/image/i/products/3/1.jpg"
@@ -76,8 +101,8 @@ INSERT INTO product
     11.02,
     4.57,
     83,
-    'Apple',
-    'laptops',
+    1,
+    2,
     'https://dummyjson.com/image/i/products/6/thumbnail.png',
     '{
       "https://dummyjson.com/image/i/products/6/1.png",
@@ -94,8 +119,8 @@ INSERT INTO product
     10.23,
     4.43,
     68,
-    'Microsoft Surface',
-    'laptops',
+    4,
+    2,
     'https://dummyjson.com/image/i/products/8/thumbnail.jpg',
     '{
       "https://dummyjson.com/image/i/products/8/1.jpg",
