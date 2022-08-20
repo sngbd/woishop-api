@@ -17,4 +17,10 @@
 [API Documentation](https://documenter.getpostman.com/view/22906795/VUqoQdgN)
 
 ### Entity Relationship Diagram (ERD)
-![](ERD/products.png)
+
+#### Server and Database
+![](ERD/server_database.jpg)
+
+#### PostgreSQL database named 'products'
+![](ERD/products_database.jpg)
+
