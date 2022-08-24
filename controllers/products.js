@@ -9,7 +9,7 @@ productsRouter.get('/categories', async (_req, res) => {
   const categoriesList = rows.map((data) => data.name);
 
   if (!categoriesList.length) {
-    return res.status(404).json(
+    return res.json(
       response(false, 'All categories not found', {}),
     );
   }
@@ -25,7 +25,7 @@ productsRouter.get('/:id', async (req, res) => {
   const { rows } = await pool.query(`${selectAllProduct} WHERE id=$1`, [id]);
 
   if (!rows.length) {
-    return res.status(404).json(
+    return res.json(
       response(false, `Product with id '${id}' not found`, {}),
     );
   }
@@ -41,7 +41,7 @@ productsRouter.get('/categories/:category', async (req, res) => {
   const { rows } = await pool.query(`${selectAllProduct} WHERE category=$1`, [category]);
 
   if (!rows.length) {
-    return res.status(404).json(
+    return res.json(
       response(false, `Category '${category}' not found`, {}),
     );
   }
@@ -56,7 +56,7 @@ productsRouter.get('/', async (_req, res) => {
   const { rows } = await pool.query(queryAllProduct);
 
   if (!rows.length) {
-    return res.status(404).json(
+    return res.json(
       response(false, 'All products not found', {}),
     );
   }

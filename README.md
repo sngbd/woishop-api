@@ -3,11 +3,13 @@
 [Design Apps](https://www.figma.com/file/ml1Iw0GkcNH8xENw7k6e5O/WoiShop)
 
 ## Backlog
-- [x] Bikin API GET Single Product
-- [x] Bikin API GET List Product by Category
-- [x] Bikin API GET List Category
-- [x] Bikin API GET List All Product
-- [x] Design Database
+- [x] API GET Single Product
+- [x] API GET List Product by Category
+- [x] API GET List Category
+- [x] API GET List All Product
+- [ ] API Register
+- [ ] API Login
+- [ ] Design Database
 
 ## Deliverable
 - [x] Source Code hosted on Gitlab
