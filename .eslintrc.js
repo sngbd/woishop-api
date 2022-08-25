@@ -1,5 +1,3 @@
-const { off } = require("./app");
-
 module.exports = {
   env: {
     commonjs: true,
@@ -14,6 +12,6 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {
-    'camelcase': 'off',
+    camelcase: 'off',
   },
 };
