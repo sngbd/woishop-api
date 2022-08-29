@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS otp(
   id SERIAL PRIMARY KEY,
   user_id INTEGER NOT NULL,
   created_at BIGINT NOT NULL,
-  expires_At BIGINT NOT NULL,
+  expires_at BIGINT NOT NULL,
   otp TEXT NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL
 )

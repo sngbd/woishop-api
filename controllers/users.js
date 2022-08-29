@@ -151,7 +151,7 @@ usersRouter.post('/verify', async (req, res) => {
   await pool.query('DELETE FROM otp WHERE user_id=$1', [user_id]);
 
   return res.json(
-    response(true, 'users email verified successfully.', {
+    response(true, 'User email verified successfully.', {
       status: 'Verified',
       user_id,
     }),
