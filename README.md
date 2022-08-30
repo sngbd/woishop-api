@@ -23,6 +23,6 @@
 #### Server and Database
 ![](ERD/server_database.jpg)
 
-#### Tables in PostgresQL database named "products"
+#### Tables in PostgreSQL database named "products"
 ![](ERD/products_database.jpg)
 
