@@ -159,13 +159,29 @@ usersRouter.post('/verify', async (req, res) => {
 });
 
 usersRouter.post('/resendOTP', async (req, res) => {
-  const { user_id, email } = req.body;
+  const { user_id } = req.body;
 
-  if (!user_id || !email) {
+  if (!user_id) {
     return res.status(404).json(
-      response(false, 'Empty users details are not allowed', {}),
+      response(false, 'Empty user detail are not allowed', {}),
     );
   }
+
+  const { rows } = await pool.query('SELECT * FROM users WHERE id=$1', [user_id]);
+  if (!rows.length) {
+    return res.json(
+      response(false, 'Account does not exist'),
+    );
+  }
+
+  const { email, verified } = rows[0];
+
+  if (verified) {
+    return res.json(
+      response(false, 'Account has been verified'),
+    );
+  }
+
   await pool.query('DELETE FROM otp WHERE user_id=$1', [user_id]);
   return sendOTP({ id: user_id, email }, res);
 });
