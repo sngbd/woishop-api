@@ -7,14 +7,14 @@
 - [x] API GET List Product by Category
 - [x] API GET List Category
 - [x] API GET List All Product
-- [ ] API Register
-- [ ] API Login
-- [ ] Design Database
+- [x] API Register
+- [x] API Login
+- [x] Design Database
 
 ## Deliverable
 - [x] Source Code hosted on Gitlab
 
-[Deployed API](http://43.204.234.59:3000/api/products/)
+[Deployed API](http://13.212.225.188:3000/api/products)
 
 [API Documentation](https://documenter.getpostman.com/view/22906795/VUqoQdgN)
 
@@ -23,6 +23,6 @@
 #### Server and Database
 ![](ERD/server_database.jpg)
 
-#### PostgreSQL database named 'products'
+#### Tables in PostgreSQL database named "products"
 ![](ERD/products_database.jpg)
 
