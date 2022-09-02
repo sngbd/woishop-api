@@ -91,10 +91,10 @@ usersRouter.post('/', async (req, res) => {
     );
   }
 
-  const { rowCount } = await pool.query('SELECT * FROM users WHERE username=$1', [username]);
+  const { rowCount } = await pool.query('SELECT * FROM users WHERE username=$1 OR email=$2', [username, email]);
   if (rowCount) {
     return res.status(404).json(
-      response(false, 'Username must be unique', {}),
+      response(false, 'Username or email has been registered', {}),
     );
   }
 
