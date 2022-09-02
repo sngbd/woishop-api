@@ -13,5 +13,7 @@ module.exports = {
   },
   rules: {
     camelcase: 'off',
+    'brace-style': 'off',
+    'consistent-return': 'off',
   },
 };
