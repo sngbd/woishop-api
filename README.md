@@ -9,20 +9,24 @@
 - [x] API GET List All Product
 - [x] API Register
 - [x] API Login
-- [x] Design Database
+- [ ] API GET All Cart
+- [ ] API GET a Single Cart
+- [ ] API GET Add a Cart
+- [ ] API GET Update a Cart
+- [ ] API GET Delete a Card
+- [ ] Design Database
 
 ## Deliverable
 - [x] Source Code hosted on Gitlab
 
-[Deployed API](http://13.212.225.188:3000/api/products)
+<!-- [Deployed API](http://13.212.225.188:3000/api/products) -->
 
-[API Documentation](https://documenter.getpostman.com/view/22906795/VUqoQdgN)
+<!-- [API Documentation](https://documenter.getpostman.com/view/22906795/VUqoQdgN) -->
 
-### Entity Relationship Diagram (ERD)
+<!-- ### Entity Relationship Diagram (ERD) -->
 
-#### Server and Database
-![](ERD/server_database.jpg)
+<!-- #### Server and Database -->
+<!-- ![](ERD/server_database.jpg) -->
 
-#### Tables in PostgreSQL database named "products"
-![](ERD/products_database.jpg)
-
+<!-- #### Tables in PostgreSQL database named "products" -->
+<!-- ![](ERD/products_database.jpg) -->
