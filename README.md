@@ -1,4 +1,4 @@
-# Product Directory
+# WoiShop API
 
 [Design Apps](https://www.figma.com/file/ml1Iw0GkcNH8xENw7k6e5O/WoiShop)
 
