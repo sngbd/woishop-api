@@ -1,20 +1,21 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const loginRouter = require('express').Router();
-const pool = require('../data/db');
 const response = require('../helpers/response');
+const { User } = require('../models');
 
 loginRouter.post('/', async (req, res) => {
   const { username, password } = req.body;
 
-  const { rowCount, rows } = await pool.query('SELECT * FROM users WHERE username=$1', [username]);
-  const user = rows[0];
+  const user = await User.findOne({
+    where: { username },
+  });
 
-  const passwordCorrect = !rowCount
+  const passwordCorrect = !user
     ? false
     : await bcrypt.compare(password, user.password_hash);
 
-  if (!(user && passwordCorrect)) {
+  if (!passwordCorrect) {
     return res.status(401).json(
       response(false, 'Invalid username or password', {}),
     );

@@ -1,8 +1,10 @@
 const bcrypt = require('bcrypt');
 const usersRouter = require('express').Router();
 const nodemailer = require('nodemailer');
-const pool = require('../data/db');
+const joi = require('joi');
+const { Op } = require('sequelize');
 const response = require('../helpers/response');
+const { User, OTP } = require('../models');
 
 const { AUTH_EMAIL, AUTH_PASS } = process.env;
 
@@ -29,15 +31,16 @@ const sendOTP = async ({ id, email }, res) => {
   const saltRounds = 10;
   const hashedOTP = await bcrypt.hash(otp, saltRounds);
 
-  await pool.query(
-    'INSERT INTO otp VALUES (DEFAULT, $1, $2, $3, $4)',
-    [id, Date.now(), Date.now() + 3600000, hashedOTP],
-  );
+  await OTP.create({
+    user_id: id,
+    expires_at: Date.now() + 3600000,
+    otp: hashedOTP,
+  });
 
   await transporter.sendMail(mailOptions);
 
   return res.json(
-    response(true, 'Verification OTP email sent', {
+    response(true, 'OTP for verification has been sent to email', {
       status: 'Pending',
       user_id: id,
       email,
@@ -46,21 +49,16 @@ const sendOTP = async ({ id, email }, res) => {
 };
 
 usersRouter.get('/', async (_req, res) => {
-  const { rowCount, rows } = await pool.query('SELECT * FROM users');
+  const users = await User.findAll();
 
-  if (!rowCount) {
+  if (!users) {
     return res.json(
       response(false, 'All users not found', {}),
     );
   }
 
-  const props = rows.map((row) => {
-    const { password_hash, ...prop } = row;
-    return prop;
-  });
-
   return res.json(
-    response(true, 'All users found', props),
+    response(true, 'All users found', users),
   );
 });
 
@@ -69,57 +67,83 @@ usersRouter.post('/', async (req, res) => {
     username,
     name,
     email,
-    phone_number,
     password,
   } = req.body;
 
-  if (!username || !password || !email || !phone_number || !name) {
-    return res.status(404).json(
-      response(false, 'Empty users details are not allowed', {}),
+  const schema = joi.object({
+    username: joi.string()
+      .alphanum()
+      .min(3)
+      .required(),
+    name: joi.string(),
+    email: joi.string()
+      .required(),
+    password: joi.string()
+      .pattern(/^[a-zA-Z0-9]{3,30}$/)
+      .required(),
+  });
+
+  try {
+    await schema.validateAsync({
+      username, name, email, password,
+    });
+  }
+  catch (err) {
+    return res.json(
+      response(false, err.details.map((e) => e.message), {}),
     );
   }
 
-  if (password.length < 3) {
-    return res.status(404).json(
-      response(false, 'Password length must be at least 3 characters long', {}),
-    );
-  }
+  const user = await User.findOne({
+    where: {
+      [Op.or]: [
+        { username },
+        { email },
+      ],
+    },
+  });
 
-  if (username.length < 3) {
-    return res.status(404).json(
-      response(false, 'Username length must be at least 3 characters long', {}),
-    );
-  }
-
-  const { rowCount } = await pool.query('SELECT * FROM users WHERE username=$1 OR email=$2', [username, email]);
-  if (rowCount) {
-    return res.status(404).json(
+  if (user) {
+    return res.json(
       response(false, 'Username or email has been registered', {}),
     );
   }
 
   const saltRounds = 10;
-  const passwordHash = await bcrypt.hash(password, saltRounds);
+  const password_hash = await bcrypt.hash(password, saltRounds);
 
-  const { rows } = await pool.query(
-    'INSERT INTO users VALUES (DEFAULT, $1, $2, $3, $4, $5, false) RETURNING id, email',
-    [username, name, email, phone_number, passwordHash],
-  );
+  const { id } = await User.create({
+    username, name, email, password_hash,
+  });
 
-  return sendOTP(rows[0], res);
+  return sendOTP({ id, email }, res);
 });
 
 usersRouter.post('/verify', async (req, res) => {
   const { user_id, otp } = req.body;
-  if (!user_id || !otp) {
-    return res.status(404).json(
-      response(false, 'Empty OTP details are not allowed', {}),
+
+  const schema = joi.object({
+    user_id: joi.number()
+      .integer()
+      .required(),
+    otp: joi.string()
+      .required(),
+  });
+
+  try {
+    await schema.validateAsync({ user_id, otp });
+  }
+  catch (err) {
+    return res.json(
+      response(false, err.details.map((e) => e.message), {}),
     );
   }
 
-  const { rowCount, rows } = await pool.query('SELECT * FROM otp WHERE user_id=$1', [user_id]);
+  const foundOTP = await OTP.findOne({
+    where: { user_id },
+  });
 
-  if (!rowCount) {
+  if (!foundOTP) {
     return res.status(404).json(
       response(
         false,
@@ -129,12 +153,15 @@ usersRouter.post('/verify', async (req, res) => {
     );
   }
 
-  const { expires_at } = rows[0];
-  const hashedOTP = rows[0].otp;
+  const { expires_at, otp: hashedOTP } = foundOTP;
+
+  const expiredOTP = await OTP.findOne({
+    where: { user_id },
+  });
 
   if (expires_at < Date.now()) {
-    await pool.query('DELETE FROM otp WHERE user_id=$1', [user_id]);
-    return res.status(404).json(
+    await expiredOTP.destroy();
+    return res.json(
       response(false, 'Code has expired. Please request again.', {}),
     );
   }
@@ -147,11 +174,16 @@ usersRouter.post('/verify', async (req, res) => {
     );
   }
 
-  await pool.query('UPDATE users SET verified=true WHERE id=$1', [user_id]);
-  await pool.query('DELETE FROM otp WHERE user_id=$1', [user_id]);
+  const user = await User.findOne({
+    where: { id: user_id },
+  });
+
+  user.verified = true;
+  await user.save();
+  await expiredOTP.destroy();
 
   return res.json(
-    response(true, 'User email verified successfully.', {
+    response(true, 'User\'s email verified successfully.', {
       status: 'Verified',
       user_id,
     }),
@@ -159,30 +191,48 @@ usersRouter.post('/verify', async (req, res) => {
 });
 
 usersRouter.post('/resendOTP', async (req, res) => {
-  const { user_id } = req.body;
+  const { user_id, email } = req.body;
 
-  if (!user_id) {
-    return res.status(404).json(
+  if (!user_id || !email) {
+    return res.json(
       response(false, 'Empty user detail are not allowed', {}),
     );
   }
 
-  const { rows } = await pool.query('SELECT * FROM users WHERE id=$1', [user_id]);
-  if (!rows.length) {
+  const expiredOTP = await OTP.findOne({
+    where: { user_id },
+  });
+
+  const user = await User.findOne({
+    where: { id: user_id },
+  });
+
+  const registered = await User.findOne({
+    where: { email },
+  });
+
+  if (!user) {
     return res.json(
-      response(false, 'Account does not exist'),
+      response(false, 'Account does not exist', {}),
     );
   }
 
-  const { email, verified } = rows[0];
-
-  if (verified) {
+  if (registered) {
     return res.json(
-      response(false, 'Account has been verified'),
+      response(false, 'Email has been registered', {}),
     );
   }
 
-  await pool.query('DELETE FROM otp WHERE user_id=$1', [user_id]);
+  user.email = email;
+  await user.save();
+
+  if (user.verified) {
+    return res.json(
+      response(false, 'Account has been verified', {}),
+    );
+  }
+
+  await expiredOTP.destroy();
   return sendOTP({ id: user_id, email }, res);
 });
 

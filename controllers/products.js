@@ -1,31 +1,37 @@
 const productsRouter = require('express').Router();
-const pool = require('../data/db');
 const response = require('../helpers/response');
-const { queryAllProduct, selectAllProduct } = require('../helpers/query');
 const { userExtractor } = require('../utils/middleware');
+const { Product, Category } = require('../models');
 
-productsRouter.get('/categories', userExtractor, async (req, res) => {
+productsRouter.get('/categories', async (req, res) => {
   // GET List Product by Category
   const { category } = req.query;
   if (category) {
-    const { rows } = await pool.query(`${selectAllProduct} WHERE category=$1`, [category]);
+    const foundCategory = await Category.findOne({
+      where: { name: category },
+    });
 
-    if (!rows.length) {
+    if (!foundCategory) {
       return res.json(
         response(false, `Category '${category}' not found`, {}),
       );
     }
 
+    const products = await Product.findAll({
+      where: { category_id: foundCategory.id },
+      include: 'category',
+    });
+
     return res.json(
-      response(true, `Category '${category}' found`, rows),
+      response(true, `Category '${category}' found`, products),
     );
   }
 
   // GET List Category
-  const { rows } = await pool.query('SELECT * FROM category');
-  const categoriesList = rows.map((data) => data.name);
+  const categories = await Category.findAll();
+  const categoriesList = categories.map((data) => data.name);
 
-  if (!categoriesList.length) {
+  if (!categoriesList) {
     return res.json(
       response(false, 'All categories not found', {}),
     );
@@ -37,32 +43,38 @@ productsRouter.get('/categories', userExtractor, async (req, res) => {
 });
 
 // GET Single Product
-productsRouter.get('/:id', userExtractor, async (req, res) => {
+productsRouter.get('/:id', async (req, res) => {
   const { id } = req.params;
-  const { rows } = await pool.query(`${selectAllProduct} WHERE id=$1`, [id]);
+  const product = await Product.findOne({
+    where: { id },
+    include: 'category',
+  });
 
-  if (!rows.length) {
+  if (!product) {
     return res.json(
       response(false, `Product with id '${id}' not found`, {}),
     );
   }
 
   return res.json(
-    response(true, `Product with id '${id}' found`, rows[0]),
+    response(true, `Product with id '${id}' found`, product),
   );
 });
 
+// GET All Product
 productsRouter.get('/', userExtractor, async (_req, res) => {
-  const { rows } = await pool.query(queryAllProduct);
+  const products = await Product.findAll({
+    include: 'category',
+  });
 
-  if (!rows.length) {
+  if (!products) {
     return res.json(
       response(false, 'All products not found', {}),
     );
   }
 
   return res.json(
-    response(true, 'All products found', rows),
+    response(true, 'All products found', products),
   );
 });
 
