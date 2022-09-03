@@ -46,5 +46,10 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'products',
     modelName: 'Product',
   });
+  Product.addScope(
+    'defaultScope', 
+    { order: [['id', 'ASC']], }, 
+    { override: true },
+  );
   return Product;
 };
