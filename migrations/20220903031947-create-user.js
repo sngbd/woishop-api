@@ -9,7 +9,9 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       username: {
-        allowNull: false,
+        type: Sequelize.STRING
+      },
+      sub: {
         type: Sequelize.STRING
       },
       name: {
@@ -20,7 +22,6 @@ module.exports = {
         type: Sequelize.TEXT
       },
       password_hash: {
-        allowNull: false,
         type: Sequelize.TEXT
       },
       verified: {

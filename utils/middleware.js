@@ -10,13 +10,15 @@ const tokenExtractor = (req, _res, next) => {
 };
 
 const userExtractor = (req, res, next) => {
-  try {
-    req.user = jwt.verify(req.token, process.env.SECRET);
-  }
-  catch {
-    return res.status(401).json(
-      response(false, 'Token invalid or missing', {}),
-    );
+  if (!req.user) {
+    try {
+      req.user = jwt.verify(req.token, process.env.SECRET);
+    }
+    catch {
+      return res.status(401).json(
+        response(false, 'Token invalid or missing', {}),
+      );
+    }
   }
   next();
 };

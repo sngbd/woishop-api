@@ -1,8 +1,10 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const loginRouter = require('express').Router();
+const passport = require('passport');
 const response = require('../helpers/response');
 const { User } = require('../models');
+require('../config/passport');
 
 loginRouter.post('/', async (req, res) => {
   const { username, password } = req.body;
@@ -40,5 +42,18 @@ loginRouter.post('/', async (req, res) => {
     ),
   );
 });
+
+loginRouter.get('/google', passport.authenticate(
+  'google',
+  { scope: ['profile', 'email'] },
+));
+
+loginRouter.get('/google/callback', passport.authenticate(
+  'google',
+  {
+    successRedirect: '/api/products',
+    failureRedirect: '/api/login/google',
+  },
+));
 
 module.exports = loginRouter;
