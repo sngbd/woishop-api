@@ -1,26 +1,20 @@
 const productsRouter = require('express').Router();
 const response = require('../helpers/response');
 const { userExtractor } = require('../utils/middleware');
-const { Product, Category } = require('../models');
+const productRepository = require('../repository/productRepository');
+const categoryRepository = require('../repository/categoryRepository');
 
 productsRouter.get('/categories', async (req, res) => {
   // GET List Product by Category
   const { category } = req.query;
   if (category) {
-    const foundCategory = await Category.findOne({
-      where: { name: category },
-    });
+    const products = await productRepository.findByCategory(category);
 
-    if (!foundCategory) {
+    if (!products) {
       return res.json(
         response(false, `Category '${category}' not found`, {}),
       );
     }
-
-    const products = await Product.findAll({
-      where: { category_id: foundCategory.id },
-      include: 'category',
-    });
 
     return res.json(
       response(true, `Category '${category}' found`, products),
@@ -28,7 +22,7 @@ productsRouter.get('/categories', async (req, res) => {
   }
 
   // GET List Category
-  const categories = await Category.findAll();
+  const categories = await categoryRepository.findAll();
   const categoriesList = categories.map((data) => data.name);
 
   if (!categoriesList) {
@@ -45,7 +39,7 @@ productsRouter.get('/categories', async (req, res) => {
 // GET Single Product
 productsRouter.get('/:id', async (req, res) => {
   const { id } = req.params;
-  const product = await Product.findOne({
+  const product = await productRepository.findOne({
     where: { id },
     include: 'category',
   });
@@ -63,7 +57,7 @@ productsRouter.get('/:id', async (req, res) => {
 
 // GET All Product
 productsRouter.get('/', userExtractor, async (_req, res) => {
-  const products = await Product.findAll({
+  const products = await productRepository.findAll({
     include: 'category',
   });
 

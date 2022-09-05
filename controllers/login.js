@@ -3,13 +3,13 @@ const bcrypt = require('bcrypt');
 const loginRouter = require('express').Router();
 const passport = require('passport');
 const response = require('../helpers/response');
-const { User } = require('../models');
+const userRepository = require('../repository/userRepository');
 require('../config/passport');
 
 loginRouter.post('/', async (req, res) => {
   const { username, password } = req.body;
 
-  const user = await User.findOne({
+  const user = await userRepository.findOne({
     where: { username },
   });
 

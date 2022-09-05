@@ -1,55 +1,14 @@
 const bcrypt = require('bcrypt');
 const usersRouter = require('express').Router();
-const nodemailer = require('nodemailer');
 const joi = require('joi');
 const { Op } = require('sequelize');
 const response = require('../helpers/response');
-const { User, OTP } = require('../models');
-
-const { AUTH_EMAIL, AUTH_PASS } = process.env;
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  auth: {
-    user: AUTH_EMAIL,
-    pass: AUTH_PASS,
-  },
-});
-
-const sendOTP = async ({ id, email }, res) => {
-  const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
-
-  const mailOptions = {
-    from: AUTH_EMAIL,
-    to: email,
-    subject: 'Verify your email',
-    html: `<p>Enter <b>${otp}</b> in the app 
-    to verify your email address and complete the registration.</p>
-    <p>This code expires in 1 hour.</p>`,
-  };
-
-  const saltRounds = 10;
-  const hashedOTP = await bcrypt.hash(otp, saltRounds);
-
-  await OTP.create({
-    user_id: id,
-    expires_at: Date.now() + 3600000,
-    otp: hashedOTP,
-  });
-
-  await transporter.sendMail(mailOptions);
-
-  return res.json(
-    response(true, 'OTP for verification has been sent to email', {
-      status: 'Pending',
-      user_id: id,
-      email,
-    }),
-  );
-};
+const otpRepository = require('../repository/otpRepository');
+const userRepository = require('../repository/userRepository');
+const { sendOTP } = require('../config/nodemailer');
 
 usersRouter.get('/', async (_req, res) => {
-  const users = await User.findAll();
+  const users = await userRepository.findAll();
 
   if (!users) {
     return res.json(
@@ -94,7 +53,7 @@ usersRouter.post('/', async (req, res) => {
     );
   }
 
-  const user = await User.findOne({
+  const user = await userRepository.findOne({
     where: {
       [Op.or]: [
         { username },
@@ -112,7 +71,7 @@ usersRouter.post('/', async (req, res) => {
   const saltRounds = 10;
   const password_hash = await bcrypt.hash(password, saltRounds);
 
-  const { id } = await User.create({
+  const { id } = await userRepository.createUser({
     username, name, email, password_hash,
   });
 
@@ -139,7 +98,7 @@ usersRouter.post('/verify', async (req, res) => {
     );
   }
 
-  const foundOTP = await OTP.findOne({
+  const foundOTP = await otpRepository.findOne({
     where: { user_id },
   });
 
@@ -155,17 +114,6 @@ usersRouter.post('/verify', async (req, res) => {
 
   const { expires_at, otp: hashedOTP } = foundOTP;
 
-  const expiredOTP = await OTP.findOne({
-    where: { user_id },
-  });
-
-  if (expires_at < Date.now()) {
-    await expiredOTP.destroy();
-    return res.json(
-      response(false, 'Code has expired. Please request again.', {}),
-    );
-  }
-
   const validOTP = await bcrypt.compare(otp, hashedOTP);
 
   if (!validOTP) {
@@ -174,13 +122,21 @@ usersRouter.post('/verify', async (req, res) => {
     );
   }
 
-  const user = await User.findOne({
-    where: { id: user_id },
+  await otpRepository.removeOTP({
+    where: { user_id },
   });
 
-  user.verified = true;
-  await user.save();
-  await expiredOTP.destroy();
+  if (expires_at < Date.now()) {
+    return res.json(
+      response(false, 'Code has expired. Please request again.', {}),
+    );
+  }
+
+  await userRepository.updateUser(
+    { where: { id: user_id } },
+    'verified',
+    true,
+  );
 
   return res.json(
     response(true, 'User\'s email verified successfully.', {
@@ -199,16 +155,8 @@ usersRouter.post('/resendOTP', async (req, res) => {
     );
   }
 
-  const expiredOTP = await OTP.findOne({
-    where: { user_id },
-  });
-
-  const user = await User.findOne({
+  const user = await userRepository.findOne({
     where: { id: user_id },
-  });
-
-  const registered = await User.findOne({
-    where: { email },
   });
 
   if (!user) {
@@ -217,14 +165,15 @@ usersRouter.post('/resendOTP', async (req, res) => {
     );
   }
 
-  if (registered) {
+  const registered = await userRepository.findOne({
+    where: { email },
+  });
+
+  if (registered && registered.email !== user.email) {
     return res.json(
       response(false, 'Email has been registered', {}),
     );
   }
-
-  user.email = email;
-  await user.save();
 
   if (user.verified) {
     return res.json(
@@ -232,7 +181,13 @@ usersRouter.post('/resendOTP', async (req, res) => {
     );
   }
 
-  await expiredOTP.destroy();
+  user.email = email;
+  user.save();
+
+  await otpRepository.removeOTP({
+    where: { user_id },
+  });
+
   return sendOTP({ id: user_id, email }, res);
 });
 
