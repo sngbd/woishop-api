@@ -10,6 +10,7 @@ const cors = require('cors');
 
 const productsRouter = require('./controllers/products');
 const usersRouter = require('./controllers/users');
+const cartsRouter = require('./controllers/carts');
 const loginRouter = require('./controllers/login');
 const logoutRouter = require('./controllers/logout');
 
@@ -30,6 +31,7 @@ app.use(passport.session());
 app.use(middleware.tokenExtractor);
 app.use('/api/products', productsRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/carts', cartsRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/logout', logoutRouter);
 

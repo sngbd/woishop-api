@@ -134,8 +134,7 @@ usersRouter.post('/verify', async (req, res) => {
 
   await userRepository.updateUser(
     { where: { id: user_id } },
-    'verified',
-    true,
+    { verified: true },
   );
 
   return res.json(

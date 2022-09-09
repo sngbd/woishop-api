@@ -16,5 +16,7 @@ module.exports = {
     'brace-style': 'off',
     'consistent-return': 'off',
     'no-underscore-dangle': 'off',
+    'no-restricted-syntax': 'off',
+    'no-await-in-loop': 'off',
   },
 };

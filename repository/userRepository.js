@@ -9,7 +9,7 @@ const findOne = ((criteria) => base.one(criteria));
 
 const findAll = ((criteria) => base.all(criteria));
 
-const updateUser = ((user, column, value) => base.update(user, column, value));
+const updateUser = ((user, value) => base.update(user, value));
 
 module.exports = {
   createUser,

@@ -15,10 +15,10 @@ class baseRepository {
     return this.model.create(row);
   }
 
-  async update(criteria, column, value) {
+  async update(criteria, value) {
     const row = await this.model.findOne(criteria);
     if (!row) return null;
-    row[column] = value;
+    Object.assign(row, value);
     return row.save();
   }
 
