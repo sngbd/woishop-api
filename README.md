@@ -9,24 +9,19 @@
 - [x] API GET List All Product
 - [x] API Register
 - [x] API Login
-- [ ] API GET All Cart
-- [ ] API GET a Single Cart
-- [ ] API GET Add a Cart
-- [ ] API GET Update a Cart
-- [ ] API GET Delete a Card
-- [ ] Design Database
+- [x] API GET All Cart
+- [x] API GET a Single Cart
+- [x] API GET Add a Cart
+- [x] API GET Update a Cart
+- [x] API GET Delete a Card
+- [x] Design Database
 
 ## Deliverable
 - [x] Source Code hosted on Gitlab
 
-<!-- [Deployed API](http://13.212.225.188:3000/api/products) -->
-
 <!-- [API Documentation](https://documenter.getpostman.com/view/22906795/VUqoQdgN) -->
 
-<!-- ### Entity Relationship Diagram (ERD) -->
+### Entity Relationship Diagram (ERD)
 
-<!-- #### Server and Database -->
-<!-- ![](ERD/server_database.jpg) -->
-
-<!-- #### Tables in PostgreSQL database named "products" -->
-<!-- ![](ERD/products_database.jpg) -->
+#### Database
+![](ERD/woishop_db.png)
