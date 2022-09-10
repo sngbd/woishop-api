@@ -19,7 +19,7 @@
 ## Deliverable
 - [x] Source Code hosted on Gitlab
 
-<!-- [API Documentation](https://documenter.getpostman.com/view/22906795/VUqoQdgN) -->
+[API Documentation](https://documenter.getpostman.com/view/22906795/VVdddSQV)
 
 ### Entity Relationship Diagram (ERD)
 
