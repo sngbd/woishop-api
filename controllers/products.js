@@ -1,6 +1,5 @@
 const productsRouter = require('express').Router();
 const response = require('../helpers/response');
-const { userExtractor } = require('../utils/middleware');
 const productRepository = require('../repository/productRepository');
 const categoryRepository = require('../repository/categoryRepository');
 
@@ -56,7 +55,7 @@ productsRouter.get('/:id', async (req, res) => {
 });
 
 // GET All Product
-productsRouter.get('/', userExtractor, async (_req, res) => {
+productsRouter.get('/', async (_req, res) => {
   const products = await productRepository.findAll({
     include: 'category',
   });

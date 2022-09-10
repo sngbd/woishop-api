@@ -1,9 +1,9 @@
 const cartsRouter = require('express').Router();
 const response = require('../helpers/response');
-// const { userExtractor } = require('../utils/middleware');
+const { userExtractor } = require('../utils/middleware');
 const cartRepository = require('../repository/cartRepository');
 
-cartsRouter.get('/', async (_req, res) => {
+cartsRouter.get('/', userExtractor, async (_req, res) => {
   const carts = await cartRepository.findAllCarts();
 
   if (!carts) {
@@ -17,7 +17,7 @@ cartsRouter.get('/', async (_req, res) => {
   );
 });
 
-cartsRouter.get('/:user_id', async (req, res) => {
+cartsRouter.get('/:user_id', userExtractor, async (req, res) => {
   const { user_id } = req.params;
   const carts = await cartRepository.findCartByUserId(user_id);
 
@@ -32,7 +32,7 @@ cartsRouter.get('/:user_id', async (req, res) => {
   );
 });
 
-cartsRouter.post('/', async (req, res) => {
+cartsRouter.post('/', userExtractor, async (req, res) => {
   const { id, products } = req.body;
 
   const cart = await cartRepository.findCartByUserId(id);
@@ -56,7 +56,7 @@ cartsRouter.post('/', async (req, res) => {
   );
 });
 
-cartsRouter.put('/:id', async (req, res) => {
+cartsRouter.put('/:id', userExtractor, async (req, res) => {
   const { id } = req.params;
   const user_id = id;
   const { product_id, quantity } = req.body;
@@ -77,7 +77,7 @@ cartsRouter.put('/:id', async (req, res) => {
   );
 });
 
-cartsRouter.delete('/:id', async (req, res) => {
+cartsRouter.delete('/:id', userExtractor, async (req, res) => {
   const { id } = req.params;
 
   const cart = await cartRepository.findCartByUserId(id);
