@@ -1,15 +1,12 @@
-const BaseRepository = require('./BaseRepository');
 const { OTP } = require('../models');
 
-const base = new BaseRepository(OTP);
+const createOTP = ((otp) => OTP.create(otp));
 
-const createOTP = ((otp) => base.create(otp));
+const findOne = ((criteria) => OTP.findOne(criteria));
 
-const findOne = ((criteria) => base.one(criteria));
+const findAll = ((criteria) => OTP.findAll(criteria));
 
-const findAll = ((criteria) => base.all(criteria));
-
-const removeOTP = ((otp) => base.remove(otp));
+const removeOTP = ((otp) => OTP.destroy(otp));
 
 module.exports = {
   createOTP,

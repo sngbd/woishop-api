@@ -2,8 +2,9 @@ const cartsRouter = require('express').Router();
 const response = require('../helpers/response');
 const { userExtractor } = require('../utils/middleware');
 const cartRepository = require('../repository/cartRepository');
+const { User, Cart } = require('../models');
 
-cartsRouter.get('/', userExtractor, async (_req, res) => {
+cartsRouter.get('/', async (_req, res) => {
   const carts = await cartRepository.findAllCarts();
 
   if (!carts) {
@@ -17,46 +18,44 @@ cartsRouter.get('/', userExtractor, async (_req, res) => {
   );
 });
 
-cartsRouter.get('/:user_id', userExtractor, async (req, res) => {
+cartsRouter.get('/:user_id', async (req, res) => {
   const { user_id } = req.params;
-  const carts = await cartRepository.findCartByUserId(user_id);
+  const cart = await cartRepository.findCartByUserId(user_id);
 
-  if (!carts) {
+  if (!cart) {
     return res.json(
       response(false, `Cart with user_id '${user_id}' not found`, {}),
     );
   }
 
   return res.json(
-    response(true, `Cart with user_id '${user_id}' found`, carts),
+    response(true, `Cart with user_id '${user_id}' found`, cart),
   );
 });
 
-cartsRouter.post('/', userExtractor, async (req, res) => {
+cartsRouter.post('/', async (req, res) => {
   const { id, products } = req.body;
 
-  const cart = await cartRepository.findCartByUserId(id);
+  const cart = await User.findOne({
+    where: { id },
+  });
 
   if (!cart) {
     return res.json(
       response(false, `User with id '${id}' doesn't exist`, {}),
     );
   }
-  if (cart.products.length) {
-    return res.json(
-      response(false, `Cart with id '${id}' already exists`, {}),
-    );
-  }
 
   const newCart = await cartRepository.createCart({
     id, products,
   });
+
   return res.json(
     response(true, `Cart with user_id '${id}' successfully created`, newCart),
   );
 });
 
-cartsRouter.put('/:id', userExtractor, async (req, res) => {
+cartsRouter.put('/:id', async (req, res) => {
   const { id } = req.params;
   const user_id = id;
   const { product_id, quantity } = req.body;
@@ -68,26 +67,37 @@ cartsRouter.put('/:id', userExtractor, async (req, res) => {
     );
   }
 
-  const newCart = await cartRepository.updateCart(
-    { where: { user_id } },
-    { user_id, product_id, quantity },
+  if (!quantity) {
+    await Cart.destroy({
+      where: { user_id, product_id },
+    });
+    const newCart = Cart.findAll({
+      where: { user_id, product_id },
+    });
+    return res.json(
+      response(true, `Cart with id '${id}' successfully updated`, newCart),
+    );
+  }
+
+  const newCart = await Cart.update(
+    { quantity },
+    { where: { user_id, product_id } },
   );
   return res.json(
     response(true, `Cart with id '${id}' successfully updated`, newCart),
   );
 });
 
-cartsRouter.delete('/:id', userExtractor, async (req, res) => {
+cartsRouter.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
-  const cart = await cartRepository.findCartByUserId(id);
-  if (!cart) {
+  const removed = await cartRepository.removeCartById(id);
+  if (!removed) {
     return res.json(
-      response(false, `Cart with id '${id}' doesn't exist already`, {}),
+      response(false, `Cart with user_id '${id}' is empty`, {}),
     );
   }
 
-  await cartRepository.removeCartById(id);
   return res.json(
     response(true, `Cart with id '${id}' successfully deleted`, {}),
   );

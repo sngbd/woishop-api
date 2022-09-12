@@ -1,21 +1,18 @@
-const BaseRepository = require('./BaseRepository');
 const categoryRepository = require('./categoryRepository');
 const { Product } = require('../models');
-
-const base = new BaseRepository(Product);
 
 const findByCategory = async (category) => {
   const foundCategory = await categoryRepository.findByName(category);
 
   if (!foundCategory) return null;
-  return base.all({
+  return Product.findAll({
     where: { category_id: foundCategory.id },
     include: 'category',
   });
 };
 
-const findOne = ((criteria) => base.one(criteria));
+const findOne = ((criteria) => Product.findOne(criteria));
 
-const findAll = ((criteria) => base.all(criteria));
+const findAll = ((criteria) => Product.findAll(criteria));
 
 module.exports = { findByCategory, findOne, findAll };

@@ -1,15 +1,12 @@
-const BaseRepository = require('./BaseRepository');
 const { User } = require('../models');
 
-const base = new BaseRepository(User);
+const createUser = ((user) => User.create(user));
 
-const createUser = ((user) => base.create(user));
+const findOne = ((criteria) => User.findOne(criteria));
 
-const findOne = ((criteria) => base.one(criteria));
+const findAll = ((criteria) => User.findAll(criteria));
 
-const findAll = ((criteria) => base.all(criteria));
-
-const updateUser = ((user, value) => base.update(user, value));
+const updateUser = ((user, value) => User.update(user, value));
 
 module.exports = {
   createUser,

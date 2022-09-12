@@ -1,12 +1,9 @@
-const BaseRepository = require('./BaseRepository');
 const { Category } = require('../models');
 
-const base = new BaseRepository(Category);
-
-const findByName = ((name) => base.one({
+const findByName = ((name) => Category.findOne({
   where: { name },
 }));
 
-const findAll = (() => base.all());
+const findAll = (() => Category.findAll());
 
 module.exports = { findByName, findAll };
