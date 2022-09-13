@@ -73,24 +73,23 @@ cartsRouter.put('/:id', async (req, res) => {
     );
   }
 
-  if (!quantity) {
+  if (quantity < 1) {
     await Cart.destroy({
       where: { user_id, product_id },
     });
-    const newCart = Cart.findAll({
-      where: { user_id, product_id },
-    });
     return res.json(
-      response(true, `Cart with id '${id}' successfully updated`, newCart),
+      response(true, `Cart with id '${id}' successfully updated`, {}),
     );
   }
 
-  const newCart = await Cart.update(
+  await Cart.update(
     { quantity },
     { where: { user_id, product_id } },
   );
   return res.json(
-    response(true, `Cart with id '${id}' successfully updated`, newCart),
+    response(true, `Cart with id '${id}' successfully updated`, {
+      user_id, product_id, quantity,
+    }),
   );
 });
 
