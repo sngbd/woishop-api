@@ -1,13 +1,13 @@
 const cartsRouter = require('express').Router();
 const response = require('../helpers/response');
-const { userExtractor } = require('../utils/middleware');
+// const  } = require('../utils/middleware');
 const cartRepository = require('../repository/cartRepository');
 const { User, Cart } = require('../models');
 
-cartsRouter.get('/', userExtractor, async (_req, res) => {
+cartsRouter.get('/', async (_req, res) => {
   const carts = await cartRepository.findAllCarts();
 
-  if (!carts) {
+  if (!carts.length) {
     return res.json(
       response(false, 'All carts not found', {}),
     );
@@ -18,7 +18,7 @@ cartsRouter.get('/', userExtractor, async (_req, res) => {
   );
 });
 
-cartsRouter.get('/:user_id', userExtractor, async (req, res) => {
+cartsRouter.get('/:user_id', async (req, res) => {
   const { user_id } = req.params;
   const cart = await cartRepository.findCartByUserId(user_id);
 
@@ -33,7 +33,7 @@ cartsRouter.get('/:user_id', userExtractor, async (req, res) => {
   );
 });
 
-cartsRouter.post('/', userExtractor, async (req, res) => {
+cartsRouter.post('/', async (req, res) => {
   const { id, products } = req.body;
 
   const cart = await User.findOne({
@@ -50,12 +50,18 @@ cartsRouter.post('/', userExtractor, async (req, res) => {
     id, products,
   });
 
+  if (!newCart) {
+    return res.json(
+      response(false, 'Quantity is not above 0 or a product is already added to the cart', {}),
+    );
+  }
+
   return res.json(
     response(true, `Cart with user_id '${id}' successfully created`, newCart),
   );
 });
 
-cartsRouter.put('/:id', userExtractor, async (req, res) => {
+cartsRouter.put('/:id', async (req, res) => {
   const { id } = req.params;
   const user_id = id;
   const { product_id, quantity } = req.body;
@@ -88,7 +94,7 @@ cartsRouter.put('/:id', userExtractor, async (req, res) => {
   );
 });
 
-cartsRouter.delete('/:id', userExtractor, async (req, res) => {
+cartsRouter.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
   const removed = await cartRepository.removeCartById(id);

@@ -38,11 +38,13 @@ const createCart = (async (cart) => {
     const productAdded = await Cart.findOne({
       where: { user_id: id, product_id },
     });
-    if (productAdded) return null;
+    if (productAdded || product.quantity < 1) return null;
     product.user_id = id;
-    if (product.quantity) newProducts.push(product);
+    newProducts.push(product);
   }
-  const newCart = await queryInterface.bulkInsert('carts', newProducts);
+  const newCart = await queryInterface.bulkInsert('carts', newProducts, {
+    returning: true,
+  });
   return newCart;
 });
 
