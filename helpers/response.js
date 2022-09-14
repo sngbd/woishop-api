@@ -1,7 +1,17 @@
-const response = (success, message, data) => ({
-  success,
-  message,
-  data,
-});
+const success = (res, message, data) => {
+  res.json({
+    success: true,
+    message,
+    data,
+  });
+};
 
-module.exports = response;
+const fail = (res, message) => {
+  res.json({
+    success: false,
+    message,
+    data: {},
+  });
+};
+
+module.exports = { success, fail };

@@ -26,13 +26,12 @@ passport.use(new GoogleStrategy(
       if (foundUser.password_hash) {
         return done(null, false);
       }
-    }
-    else {
+    } else {
       await User.create({
         sub, name, email, verified: true,
       });
     }
 
-    done(null, profile);
+    return done(null, profile);
   }),
 ));

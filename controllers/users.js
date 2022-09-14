@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const usersRouter = require('express').Router();
 const joi = require('joi');
 const { Op } = require('sequelize');
-const response = require('../helpers/response');
+const { success, fail } = require('../helpers/response');
 const otpRepository = require('../repository/otpRepository');
 const userRepository = require('../repository/userRepository');
 const { sendOTP } = require('../config/nodemailer');
@@ -11,14 +11,10 @@ usersRouter.get('/', async (_req, res) => {
   const users = await userRepository.findAll();
 
   if (!users) {
-    return res.json(
-      response(false, 'All users not found', {}),
-    );
+    return fail(res, 'All users not found');
   }
 
-  return res.json(
-    response(true, 'All users found', users),
-  );
+  return success(res, 'All users found', users);
 });
 
 usersRouter.post('/', async (req, res) => {
@@ -46,11 +42,8 @@ usersRouter.post('/', async (req, res) => {
     await schema.validateAsync({
       username, name, email, password,
     });
-  }
-  catch (err) {
-    return res.json(
-      response(false, err.details.map((e) => e.message), {}),
-    );
+  } catch (err) {
+    return fail(res, err.details.map((e) => e.message));
   }
 
   const user = await userRepository.findOne({
@@ -63,9 +56,7 @@ usersRouter.post('/', async (req, res) => {
   });
 
   if (user) {
-    return res.json(
-      response(false, 'Username or email has been registered', {}),
-    );
+    return fail(res, 'Username or email has been registered');
   }
 
   const saltRounds = 10;
@@ -91,11 +82,8 @@ usersRouter.post('/verify', async (req, res) => {
 
   try {
     await schema.validateAsync({ user_id, otp });
-  }
-  catch (err) {
-    return res.json(
-      response(false, err.details.map((e) => e.message), {}),
-    );
+  } catch (err) {
+    return fail(res, err.details.map((e) => e.message));
   }
 
   const foundOTP = await otpRepository.findOne({
@@ -103,12 +91,9 @@ usersRouter.post('/verify', async (req, res) => {
   });
 
   if (!foundOTP) {
-    return res.status(404).json(
-      response(
-        false,
-        'Account doesn\'t exist or has been verified already. Please register or login.',
-        {},
-      ),
+    return fail(
+      res.status(404),
+      'Account doesn\'t exist or has been verified already. Please register or login.',
     );
   }
 
@@ -117,9 +102,7 @@ usersRouter.post('/verify', async (req, res) => {
   const validOTP = await bcrypt.compare(otp, hashedOTP);
 
   if (!validOTP) {
-    return res.status(404).json(
-      response(false, 'Invalid code passed. Please check your inbox.', {}),
-    );
+    return fail(res, 'Invalid code passed. Please check your inbox.');
   }
 
   await otpRepository.removeOTP({
@@ -127,9 +110,7 @@ usersRouter.post('/verify', async (req, res) => {
   });
 
   if (expires_at < Date.now()) {
-    return res.json(
-      response(false, 'Code has expired. Please request again.', {}),
-    );
+    return fail(res, 'Code has expired. Please request again.');
   }
 
   await userRepository.updateUser(
@@ -137,11 +118,10 @@ usersRouter.post('/verify', async (req, res) => {
     { verified: true },
   );
 
-  return res.json(
-    response(true, 'User\'s email verified successfully.', {
-      status: 'Verified',
-      user_id,
-    }),
+  return success(
+    res,
+    'User\'s email verified successfully.',
+    { status: 'Verified', user_id },
   );
 });
 
@@ -149,9 +129,7 @@ usersRouter.post('/resendOTP', async (req, res) => {
   const { user_id, email } = req.body;
 
   if (!user_id || !email) {
-    return res.json(
-      response(false, 'Empty user detail are not allowed', {}),
-    );
+    return fail(res, 'Empty user detail are not allowed');
   }
 
   const user = await userRepository.findOne({
@@ -159,9 +137,7 @@ usersRouter.post('/resendOTP', async (req, res) => {
   });
 
   if (!user) {
-    return res.json(
-      response(false, 'Account does not exist', {}),
-    );
+    return fail(res, 'Account does not exist');
   }
 
   const registered = await userRepository.findOne({
@@ -169,15 +145,11 @@ usersRouter.post('/resendOTP', async (req, res) => {
   });
 
   if (registered && registered.email !== user.email) {
-    return res.json(
-      response(false, 'Email has been registered', {}),
-    );
+    return fail(res, 'Email has been registered');
   }
 
   if (user.verified) {
-    return res.json(
-      response(false, 'Account has been verified', {}),
-    );
+    return fail(res, 'Account has been verified');
   }
 
   user.email = email;

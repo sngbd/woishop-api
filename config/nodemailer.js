@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
-const response = require('../helpers/response');
+const { success } = require('../helpers/response');
 const otpRepository = require('../repository/otpRepository');
 
 const { AUTH_EMAIL, AUTH_PASS } = process.env;
@@ -36,12 +36,10 @@ const sendOTP = async ({ id, email }, res) => {
 
   await transporter.sendMail(mailOptions);
 
-  return res.json(
-    response(true, 'OTP for verification has been sent to email', {
-      status: 'Pending',
-      user_id: id,
-      email,
-    }),
+  return success(
+    res,
+    'OTP for verification has been sent to email',
+    { status: 'Pending', user_id: id, email },
   );
 };
 
