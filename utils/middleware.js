@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const response = require('../helpers/response');
+const { fail } = require('./response');
 
 const tokenExtractor = (req, _res, next) => {
   const authorization = req.get('authorization');
@@ -13,11 +13,8 @@ const userExtractor = (req, res, next) => {
   if (!req.user) {
     try {
       req.user = jwt.verify(req.token, process.env.SECRET);
-    }
-    catch {
-      return res.status(401).json(
-        response(false, 'Token invalid or missing', {}),
-      );
+    } catch {
+      fail(res.status(401), 'Token invalid or missing', {});
     }
   }
   next();

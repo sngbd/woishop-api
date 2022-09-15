@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
-const { success } = require('../helpers/response');
+const { success } = require('../utils/response');
 const otpRepository = require('../repository/otpRepository');
 
 const { AUTH_EMAIL, AUTH_PASS } = process.env;

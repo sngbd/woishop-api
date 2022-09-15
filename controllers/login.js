@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const loginRouter = require('express').Router();
 const passport = require('passport');
-const { success, fail } = require('../helpers/response');
+const { success, fail } = require('../utils/response');
 const userRepository = require('../repository/userRepository');
 require('../config/passport');
 

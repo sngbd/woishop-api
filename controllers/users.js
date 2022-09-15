@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const usersRouter = require('express').Router();
 const joi = require('joi');
 const { Op } = require('sequelize');
-const { success, fail } = require('../helpers/response');
+const { success, fail } = require('../utils/response');
 const otpRepository = require('../repository/otpRepository');
 const userRepository = require('../repository/userRepository');
 const { sendOTP } = require('../config/nodemailer');
@@ -114,8 +114,8 @@ usersRouter.post('/verify', async (req, res) => {
   }
 
   await userRepository.updateUser(
-    { where: { id: user_id } },
     { verified: true },
+    { where: { id: user_id } },
   );
 
   return success(

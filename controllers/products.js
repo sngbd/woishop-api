@@ -1,5 +1,5 @@
 const productsRouter = require('express').Router();
-const { success, fail } = require('../helpers/response');
+const { success, fail } = require('../utils/response');
 const productRepository = require('../repository/productRepository');
 const categoryRepository = require('../repository/categoryRepository');
 

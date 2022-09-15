@@ -1,21 +1,21 @@
 const cartsRouter = require('express').Router();
-const { success, fail } = require('../helpers/response');
-// const { userExtractor } = require('../utils/middleware');
+const { success, fail } = require('../utils/response');
+const { userExtractor } = require('../utils/middleware');
 const cartRepository = require('../repository/cartRepository');
 const { User, Cart } = require('../models');
 
-cartsRouter.get('/', async (_req, res) => {
-  const carts = await cartRepository.findAllCarts();
+cartsRouter.get('/', userExtractor, async (req, res) => {
+  const { user_id } = req.query;
+  if (!user_id) {
+    const carts = await cartRepository.findAllCarts();
 
-  if (!carts.length) {
-    return fail(res, 'All carts not found');
+    if (!carts.length) {
+      return fail(res, 'All carts not found');
+    }
+
+    return success(res, 'All carts found', carts);
   }
 
-  return success(res, 'All carts found', carts);
-});
-
-cartsRouter.get('/', async (req, res) => {
-  const { user_id } = req.query;
   const cart = await cartRepository.findCartByUserId(user_id);
 
   if (!cart) {
@@ -26,7 +26,14 @@ cartsRouter.get('/', async (req, res) => {
 });
 
 cartsRouter.post('/', async (req, res) => {
-  const { id, products } = req.body;
+  let { id } = req.user;
+  const { products } = req.body;
+
+  if (typeof id === 'string') {
+    id = User.findOne({
+      where: { sub: id },
+    }).id;
+  }
 
   const cart = await User.findOne({
     where: { id },
