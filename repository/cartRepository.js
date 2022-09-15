@@ -53,12 +53,12 @@ const removeCartById = (async (user_id) => {
     where: { user_id },
   });
   if (exists) {
-    await Cart.destroy({
+    const destroyed = await Cart.destroy({
       where: { user_id },
     });
-  } else {
-    return null;
+    return destroyed;
   }
+  return null;
 });
 
 module.exports = {
