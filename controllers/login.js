@@ -47,9 +47,26 @@ loginRouter.get('/google', passport.authenticate(
 loginRouter.get('/google/callback', passport.authenticate(
   'google',
   {
-    successRedirect: '/api/products',
-    failureRedirect: '/api/login/google',
+    successRedirect: '/api/login/success',
+    failureRedirect: '/api/login/fail',
   },
 ));
+
+loginRouter.get('/success', (req, res) => {
+  if (req.isAuthenticated()) {
+    return success(res, 'User successfully logged in', {
+      sub: req.user.id,
+      accessToken: req.user.accessToken,
+    });
+  }
+  return res.redirect('/api/login/fail');
+});
+
+loginRouter.get('/fail', (req, res) => {
+  if (req.isUnauthenticated()) {
+    return fail(res, 'User failed to log in');
+  }
+  return res.redirect('/api/login/success');
+});
 
 module.exports = loginRouter;

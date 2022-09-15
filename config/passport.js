@@ -32,6 +32,8 @@ passport.use(new GoogleStrategy(
       });
     }
 
-    return done(null, profile);
+    const user = profile;
+    user.accessToken = accessToken;
+    return done(null, user);
   }),
 ));
