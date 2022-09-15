@@ -30,9 +30,9 @@ cartsRouter.post('/', userExtractor, async (req, res) => {
   const { products } = req.body;
 
   if (typeof id === 'string') {
-    id = User.findOne({
+    ({ id } = await User.findOne({
       where: { sub: id },
-    }).id;
+    }));
   }
 
   const cart = await User.findOne({
