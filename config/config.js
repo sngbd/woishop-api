@@ -48,5 +48,8 @@ module.exports = {
         rejectUnauthorized: false,
       },
     },
+    define: {
+      timestamps: false,
+    },
   },
 };
