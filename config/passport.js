@@ -33,7 +33,14 @@ passport.use(new GoogleStrategy(
     }
 
     const user = profile;
+
+    const { id } = await User.findOne({
+      where: { sub },
+    });
+
+    user.id = id;
     user.accessToken = accessToken;
+
     return done(null, user);
   }),
 ));

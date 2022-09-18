@@ -55,7 +55,7 @@ loginRouter.get('/google/callback', passport.authenticate(
 loginRouter.get('/success', (req, res) => {
   if (req.isAuthenticated()) {
     return success(res, 'User successfully logged in', {
-      sub: req.user.id,
+      id: req.user.id,
       accessToken: req.user.accessToken,
     });
   }
