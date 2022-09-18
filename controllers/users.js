@@ -7,16 +7,6 @@ const otpRepository = require('../repository/otpRepository');
 const userRepository = require('../repository/userRepository');
 const { sendOTP } = require('../config/nodemailer');
 
-usersRouter.get('/', async (_req, res) => {
-  const users = await userRepository.findAll();
-
-  if (!users) {
-    return fail(res, 'All users not found');
-  }
-
-  return success(res, 'All users found', users);
-});
-
 usersRouter.post('/', async (req, res) => {
   const {
     username,

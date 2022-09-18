@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const { fail } = require('./response');
+const { User } = require('../models');
 
 const tokenExtractor = (req, _res, next) => {
   const authorization = req.get('authorization');
@@ -16,7 +17,10 @@ const userExtractor = async (req, res, next) => {
       const { data: { sub } } = await axios(
         `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${req.token}`,
       );
-      req.user = { id: sub };
+      const { id } = await User.findOne({
+        where: { sub },
+      });
+      req.user = { id };
     } catch {
       try {
         req.user = jwt.verify(req.token, process.env.SECRET);
@@ -25,6 +29,15 @@ const userExtractor = async (req, res, next) => {
       }
     }
   }
+
+  const { verified } = await User.findOne({
+    where: { id: req.user.id },
+  });
+
+  if (!verified) {
+    fail(res.status(401), 'Account not verified');
+  }
+
   next();
 };
 

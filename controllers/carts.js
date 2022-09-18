@@ -26,14 +26,8 @@ cartsRouter.get('/', userExtractor, async (req, res) => {
 });
 
 cartsRouter.post('/', userExtractor, async (req, res) => {
-  let { id } = req.user;
   const { products } = req.body;
-
-  if (typeof id === 'string') {
-    ({ id } = await User.findOne({
-      where: { sub: id },
-    }));
-  }
+  const { id } = req.user;
 
   const cart = await User.findOne({
     where: { id },
