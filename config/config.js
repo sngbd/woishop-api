@@ -5,7 +5,6 @@ const {
   DB_PASSWORD,
   DB_DEV,
   DB_TEST,
-  DB_PROD,
   DB_HOST,
 } = process.env;
 
@@ -31,12 +30,13 @@ module.exports = {
     },
   },
   production: {
-    username: DB_USERNAME,
-    password: DB_PASSWORD,
-    database: DB_PROD,
-    host: DB_HOST,
-    define: {
-      timestamps: false,
+    use_env_variable: 'DATABASE_URL',
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
     },
   },
 };
