@@ -6,7 +6,17 @@ const {
   DB_DEV,
   DB_TEST,
   DB_HOST,
+  NODE_ENV,
+  CLIENT_ID_PROD,
+  CLIENT_SECRET_PROD,
+  CALLBACK_URL_PROD,
 } = process.env;
+
+if (NODE_ENV === 'production') {
+  process.env.CLIENT_ID = CLIENT_ID_PROD;
+  process.env.CLIENT_SECRET = CLIENT_SECRET_PROD;
+  process.env.CALLBACK_URL = CALLBACK_URL_PROD;
+}
 
 module.exports = {
   development: {
