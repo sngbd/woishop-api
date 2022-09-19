@@ -15,7 +15,7 @@ const userExtractor = async (req, res, next) => {
     try {
       req.user = jwt.verify(req.token, process.env.SECRET);
     } catch {
-      fail(res.status(401), 'Token invalid or missing');
+      return fail(res.status(401), 'Token invalid or missing');
     }
   }
 
@@ -23,10 +23,10 @@ const userExtractor = async (req, res, next) => {
     where: { id: req.user.id },
   });
   if (!verified) {
-    fail(res.status(401), 'Account not verified');
+    return fail(res.status(401), 'Account not verified');
   }
 
-  next();
+  return next();
 };
 
 module.exports = {

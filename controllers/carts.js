@@ -48,8 +48,8 @@ cartsRouter.post('/', userExtractor, async (req, res) => {
   return success(res, `Cart with user_id '${id}' successfully created`, newCart);
 });
 
-cartsRouter.put('/:id', userExtractor, async (req, res) => {
-  const { id } = req.params;
+cartsRouter.put('/', userExtractor, async (req, res) => {
+  const { id } = req.user;
   const user_id = id;
   const { product_id, quantity } = req.body;
 
@@ -74,8 +74,8 @@ cartsRouter.put('/:id', userExtractor, async (req, res) => {
   });
 });
 
-cartsRouter.delete('/:id', userExtractor, async (req, res) => {
-  const { id } = req.params;
+cartsRouter.delete('/', userExtractor, async (req, res) => {
+  const { id } = req.user;
 
   const removed = await cartRepository.removeCartById(id);
   if (!removed) {
