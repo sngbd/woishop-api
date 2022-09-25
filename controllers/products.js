@@ -1,9 +1,8 @@
-const productsRouter = require('express').Router();
 const { success, fail } = require('../utils/response');
 const productRepository = require('../repository/productRepository');
 const categoryRepository = require('../repository/categoryRepository');
 
-productsRouter.get('/categories', async (req, res) => {
+const getAllCategory = async (req, res) => {
   const { category } = req.query;
   if (category) {
     const products = await productRepository.findByCategory(category);
@@ -23,9 +22,9 @@ productsRouter.get('/categories', async (req, res) => {
   }
 
   return success(res, 'All categories found', categoriesList);
-});
+};
 
-productsRouter.get('/:id', async (req, res) => {
+const getProductById = async (req, res) => {
   const { id } = req.params;
   const product = await productRepository.findOne({
     where: { id },
@@ -37,9 +36,9 @@ productsRouter.get('/:id', async (req, res) => {
   }
 
   return success(res, `Product with id '${id}' found`, product);
-});
+};
 
-productsRouter.get('/', async (_req, res) => {
+const getAllProduct = async (_req, res) => {
   const products = await productRepository.findAll({
     include: 'category',
   });
@@ -49,6 +48,10 @@ productsRouter.get('/', async (_req, res) => {
   }
 
   return success(res, 'All products found', products);
-});
+};
 
-module.exports = productsRouter;
+module.exports = {
+  getAllCategory,
+  getProductById,
+  getAllProduct,
+};

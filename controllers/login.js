@@ -1,12 +1,11 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const loginRouter = require('express').Router();
 const passport = require('passport');
 const { success, fail } = require('../utils/response');
 const userRepository = require('../repository/userRepository');
 require('../config/passport');
 
-loginRouter.post('/', async (req, res) => {
+const userLogin = async (req, res) => {
   const { username, password } = req.body;
 
   const user = await userRepository.findOne({
@@ -37,22 +36,22 @@ loginRouter.post('/', async (req, res) => {
     'User successfully logged in',
     { token, username: user.username, name: user.name },
   );
-});
+};
 
-loginRouter.get('/google', passport.authenticate(
+const googleOAuth = passport.authenticate(
   'google',
   { scope: ['profile', 'email'] },
-));
+);
 
-loginRouter.get('/google/callback', passport.authenticate(
+const googleOAuthCallback = passport.authenticate(
   'google',
   {
     successRedirect: '/api/login/success',
     failureRedirect: '/api/login/fail',
   },
-));
+);
 
-loginRouter.get('/success', (req, res) => {
+const successLogin = (req, res) => {
   if (req.isAuthenticated()) {
     return success(res, 'User successfully logged in', {
       id: req.user.id,
@@ -60,13 +59,19 @@ loginRouter.get('/success', (req, res) => {
     });
   }
   return res.redirect('/api/login/fail');
-});
+};
 
-loginRouter.get('/fail', (req, res) => {
+const failLogin = (req, res) => {
   if (req.isUnauthenticated()) {
     return fail(res, 'User failed to log in');
   }
   return res.redirect('/api/login/success');
-});
+};
 
-module.exports = loginRouter;
+module.exports = {
+  userLogin,
+  googleOAuth,
+  googleOAuthCallback,
+  successLogin,
+  failLogin,
+};

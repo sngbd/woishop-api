@@ -8,11 +8,11 @@ const cookieSession = require('cookie-session');
 const app = express();
 const cors = require('cors');
 
-const productsRouter = require('./controllers/products');
-const usersRouter = require('./controllers/users');
-const cartsRouter = require('./controllers/carts');
-const loginRouter = require('./controllers/login');
-const logoutRouter = require('./controllers/logout');
+const productsRouter = require('./routes/products');
+const usersRouter = require('./routes/users');
+const cartsRouter = require('./routes/carts');
+const loginRouter = require('./routes/login');
+const logoutRouter = require('./routes/logout');
 
 const middleware = require('./utils/middleware');
 

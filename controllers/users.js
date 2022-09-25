@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-const usersRouter = require('express').Router();
 const joi = require('joi');
 const { Op } = require('sequelize');
 const { success, fail } = require('../utils/response');
@@ -7,7 +6,7 @@ const otpRepository = require('../repository/otpRepository');
 const userRepository = require('../repository/userRepository');
 const { sendOTP } = require('../config/nodemailer');
 
-usersRouter.post('/', async (req, res) => {
+const registerUser = async (req, res) => {
   const {
     username,
     name,
@@ -57,9 +56,9 @@ usersRouter.post('/', async (req, res) => {
   });
 
   return sendOTP({ id, email }, res);
-});
+};
 
-usersRouter.post('/verify', async (req, res) => {
+const verifyUser = async (req, res) => {
   const { user_id, otp } = req.body;
 
   const schema = joi.object({
@@ -113,9 +112,9 @@ usersRouter.post('/verify', async (req, res) => {
     'User\'s email verified successfully.',
     { status: 'Verified', user_id },
   );
-});
+};
 
-usersRouter.post('/resendOTP', async (req, res) => {
+const resendOTP = async (req, res) => {
   const { user_id, email } = req.body;
 
   if (!user_id || !email) {
@@ -150,6 +149,10 @@ usersRouter.post('/resendOTP', async (req, res) => {
   });
 
   return sendOTP({ id: user_id, email }, res);
-});
+};
 
-module.exports = usersRouter;
+module.exports = {
+  registerUser,
+  verifyUser,
+  resendOTP,
+};

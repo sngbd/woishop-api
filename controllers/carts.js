@@ -1,10 +1,8 @@
-const cartsRouter = require('express').Router();
 const { success, fail } = require('../utils/response');
-const { userExtractor } = require('../utils/middleware');
 const cartRepository = require('../repository/cartRepository');
 const { User, Cart } = require('../models');
 
-cartsRouter.get('/', userExtractor, async (req, res) => {
+const getAllCart = async (req, res) => {
   const { user_id } = req.query;
   if (!user_id) {
     const carts = await cartRepository.findAllCarts();
@@ -23,9 +21,9 @@ cartsRouter.get('/', userExtractor, async (req, res) => {
   }
 
   return success(res, `Cart with user_id '${user_id}' found`, cart);
-});
+};
 
-cartsRouter.post('/', userExtractor, async (req, res) => {
+const addCart = async (req, res) => {
   const { products } = req.body;
   const { id } = req.user;
 
@@ -46,9 +44,9 @@ cartsRouter.post('/', userExtractor, async (req, res) => {
   }
 
   return success(res, `Cart with user_id '${id}' successfully created`, newCart);
-});
+};
 
-cartsRouter.put('/', userExtractor, async (req, res) => {
+const updateCart = async (req, res) => {
   const { id } = req.user;
   const user_id = id;
   const { product_id, quantity } = req.body;
@@ -72,9 +70,9 @@ cartsRouter.put('/', userExtractor, async (req, res) => {
   return success(res, `Cart with id '${id}' successfully updated`, {
     user_id, product_id, quantity,
   });
-});
+};
 
-cartsRouter.delete('/', userExtractor, async (req, res) => {
+const deleteCart = async (req, res) => {
   const { id } = req.user;
 
   const removed = await cartRepository.removeCartById(id);
@@ -83,6 +81,11 @@ cartsRouter.delete('/', userExtractor, async (req, res) => {
   }
 
   return success(res, `Cart with id '${id}' successfully deleted`, {});
-});
+};
 
-module.exports = cartsRouter;
+module.exports = {
+  getAllCart,
+  addCart,
+  updateCart,
+  deleteCart,
+};
