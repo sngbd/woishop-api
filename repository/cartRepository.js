@@ -61,9 +61,31 @@ const removeCartById = (async (user_id) => {
   return null;
 });
 
+const updateOrder = (async (quantity, order) => {
+  const exists = await Cart.findOne({
+    where: order,
+  });
+  if (exists) {
+    const { quantity: qty } = quantity;
+    if (qty < 1) {
+      const destroyed = await Cart.destroy({
+        where: order,
+      });
+      return destroyed;
+    }
+    const updated = await Cart.update(
+      quantity,
+      { where: order },
+    );
+    return updated;
+  }
+  return null;
+});
+
 module.exports = {
   findCartByUserId,
   findAllCarts,
   createCart,
   removeCartById,
+  updateOrder,
 };

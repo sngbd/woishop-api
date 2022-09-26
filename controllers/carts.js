@@ -1,6 +1,6 @@
 const { success, fail } = require('../utils/response');
 const cartRepository = require('../repository/cartRepository');
-const { User, Cart } = require('../models');
+const userRepository = require('../repository/userRepository');
 
 const getAllCart = async (req, res) => {
   const { user_id } = req.query;
@@ -27,7 +27,7 @@ const addCart = async (req, res) => {
   const { products } = req.body;
   const { id } = req.user;
 
-  const cart = await User.findOne({
+  const cart = await userRepository.findOne({
     where: { id },
   });
 
@@ -56,19 +56,19 @@ const updateCart = async (req, res) => {
     return fail(res, `Cart with id '${id}' doesn't exist already`);
   }
 
-  if (quantity < 1) {
-    await Cart.destroy({
-      where: { user_id, product_id },
-    });
-    return success(res, `Cart with id '${id}' successfully updated`, {});
+  const updated = await cartRepository.updateOrder(
+    { quantity },
+    { user_id, product_id },
+  );
+
+  if (!updated) {
+    return fail(res, `Order with product_id ${product_id} doesn't exist`);
   }
 
-  await Cart.update(
-    { quantity },
-    { where: { user_id, product_id } },
-  );
   return success(res, `Cart with id '${id}' successfully updated`, {
-    user_id, product_id, quantity,
+    user_id,
+    product_id,
+    quantity,
   });
 };
 
