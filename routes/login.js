@@ -1,7 +1,8 @@
 const loginRouter = require('express').Router();
+const validator = require('../utils/validators/login');
 const login = require('../controllers/login');
 
-loginRouter.post('/', login.userLogin);
+loginRouter.post('/', validator.userLogin, login.userLogin);
 loginRouter.get('/google', login.googleOAuth);
 loginRouter.get('/google/callback', login.googleOAuthCallback);
 loginRouter.get('/success', login.successLogin);
