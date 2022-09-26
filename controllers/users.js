@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-const joi = require('joi');
 const { Op } = require('sequelize');
 const { success, fail } = require('../utils/response');
 const otpRepository = require('../repository/otpRepository');
@@ -13,27 +12,6 @@ const registerUser = async (req, res) => {
     email,
     password,
   } = req.body;
-
-  const schema = joi.object({
-    username: joi.string()
-      .alphanum()
-      .min(3)
-      .required(),
-    name: joi.string(),
-    email: joi.string()
-      .required(),
-    password: joi.string()
-      .pattern(/^[a-zA-Z0-9]{3,30}$/)
-      .required(),
-  });
-
-  try {
-    await schema.validateAsync({
-      username, name, email, password,
-    });
-  } catch (err) {
-    return fail(res, err.details.map((e) => e.message));
-  }
 
   const user = await userRepository.findOne({
     where: {
@@ -60,20 +38,6 @@ const registerUser = async (req, res) => {
 
 const verifyUser = async (req, res) => {
   const { user_id, otp } = req.body;
-
-  const schema = joi.object({
-    user_id: joi.number()
-      .integer()
-      .required(),
-    otp: joi.string()
-      .required(),
-  });
-
-  try {
-    await schema.validateAsync({ user_id, otp });
-  } catch (err) {
-    return fail(res, err.details.map((e) => e.message));
-  }
 
   const foundOTP = await otpRepository.findOne({
     where: { user_id },
@@ -116,10 +80,6 @@ const verifyUser = async (req, res) => {
 
 const resendOTP = async (req, res) => {
   const { user_id, email } = req.body;
-
-  if (!user_id || !email) {
-    return fail(res, 'Empty user detail are not allowed');
-  }
 
   const user = await userRepository.findOne({
     where: { id: user_id },
