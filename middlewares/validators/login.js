@@ -1,5 +1,5 @@
 const joi = require('joi');
-const { fail } = require('../response');
+const { fail } = require('../../utils/response');
 
 const userLogin = async (req, res, next) => {
   const schema = joi.object({

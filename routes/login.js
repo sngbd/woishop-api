@@ -1,5 +1,5 @@
 const loginRouter = require('express').Router();
-const validator = require('../utils/validators/login');
+const validator = require('../middlewares/validators/login');
 const login = require('../controllers/login');
 
 loginRouter.post('/', validator.userLogin, login.userLogin);

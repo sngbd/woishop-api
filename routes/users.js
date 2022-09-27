@@ -1,6 +1,6 @@
 const usersRouter = require('express').Router();
 const user = require('../controllers/users');
-const validator = require('../utils/validators/users');
+const validator = require('../middlewares/validators/users');
 
 usersRouter.post('/', validator.registerUser, user.registerUser);
 usersRouter.post('/verify', validator.verifyUser, user.verifyUser);

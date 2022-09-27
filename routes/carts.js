@@ -1,6 +1,6 @@
 const cartsRouter = require('express').Router();
-const { userExtractor } = require('../utils/middleware');
-const validator = require('../utils/validators/carts');
+const { userExtractor } = require('../middlewares/middleware');
+const validator = require('../middlewares/validators/carts');
 const cart = require('../controllers/carts');
 
 cartsRouter.get('/', userExtractor, cart.getAllCart);

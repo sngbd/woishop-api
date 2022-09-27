@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const { success, fail } = require('../utils/response');
 const otpRepository = require('../repository/otpRepository');
 const userRepository = require('../repository/userRepository');
-const { sendOTP } = require('../config/nodemailer');
+const { sendOTP } = require('../services/nodemailer');
 
 const registerUser = async (req, res) => {
   const {

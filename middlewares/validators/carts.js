@@ -1,5 +1,5 @@
 const joi = require('joi');
-const { fail } = require('../response');
+const { fail } = require('../../utils/response');
 
 const product = joi.object({
   product_id: joi.number()

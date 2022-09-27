@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 const { success, fail } = require('../utils/response');
 const userRepository = require('../repository/userRepository');
-require('../config/passport');
+require('../middlewares/passport');
 
 const userLogin = async (req, res) => {
   const { username, password } = req.body;
