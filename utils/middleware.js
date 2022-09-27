@@ -2,7 +2,7 @@ const morgan = require('morgan');
 const passport = require('passport');
 const cookieSession = require('cookie-session');
 const cors = require('cors');
-const { tokenExtractor } = require('../middlewares/middleware');
+const { tokenExtractor } = require('../middlewares/auth');
 
 const middleware = (express, app) => {
   app.use(cors());

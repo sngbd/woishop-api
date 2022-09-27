@@ -1,5 +1,5 @@
 const cartsRouter = require('express').Router();
-const { userExtractor } = require('../middlewares/middleware');
+const { userExtractor } = require('../middlewares/auth');
 const validator = require('../middlewares/validators/carts');
 const cart = require('../controllers/carts');
 
